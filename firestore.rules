@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isBootstrappedAdmin() {
+      return isSignedIn() && request.auth.token.email != null && request.auth.token.email.lower() == 'sumit13org@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    // User Profile Validation & Access
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      // Admins can manage any user profile (invite, assign role admin or agent)
+      // Users can write their own profile upon initial sign-up if invited or bootstrapped
+      allow create, update: if isSignedIn() && (
+        isAdmin() || 
+        (request.auth.uid == userId && (
+          isBootstrappedAdmin() || 
+          (request.resource.data.role == 'agent')
+        ))
+      );
+      allow delete: if isAdmin() && request.auth.uid != userId;
+    }
+
+    // Carriers / Applications
+    match /carriers/{carrierId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Hub Tabs / Categories
+    match /hubTabs/{tabId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Left Navigation Links
+    match /navLinks/{linkId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Omkarr Insurance Hub",
+  "description": "Internal agent toolkit dashboard for Omkarr Insurance Hub - Protection You Can Trust For Life.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,102 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with role-based access control (admin or agent)",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "agent"],
+          "description": "Access role: admin (full edit) or agent (view only)"
+        },
+        "invitedBy": {
+          "type": "string",
+          "description": "Email or UID of admin who added this user"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when user record was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when user record was last updated"
+        }
+      },
+      "required": ["email", "role"]
+    },
+    "CarrierApp": {
+      "title": "CarrierApp",
+      "description": "Insurance carrier or application portal configured in the hub",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "url": { "type": "string" },
+        "displayUrl": { "type": "string" },
+        "tagline": { "type": "string" },
+        "accentColor": { "type": "string" },
+        "logoLetter": { "type": "string" },
+        "badge": { "type": "string" },
+        "logoType": { "type": "string" }
+      },
+      "required": ["name", "url", "category"]
+    },
+    "HubTab": {
+      "title": "HubTab",
+      "description": "Category tab for organizing applications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "icon": { "type": "string" },
+        "isSystem": { "type": "boolean" },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "label"]
+    },
+    "LeftNavLink": {
+      "title": "LeftNavLink",
+      "description": "Navigation link in the left quick launch menu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "icon": { "type": "string" },
+        "url": { "type": "string" },
+        "filterQuery": { "type": "string" },
+        "tabCategory": { "type": "string" },
+        "isSystem": { "type": "boolean" }
+      },
+      "required": ["id", "label", "icon"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with role permission"
+    },
+    "/carriers/{carrierId}": {
+      "schema": "CarrierApp",
+      "description": "Configured insurance carriers"
+    },
+    "/hubTabs/{tabId}": {
+      "schema": "HubTab",
+      "description": "Configured categories and tabs"
+    },
+    "/navLinks/{linkId}": {
+      "schema": "LeftNavLink",
+      "description": "Left navigation rail items"
+    }
+  }
+}
